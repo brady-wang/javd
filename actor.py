@@ -101,7 +101,7 @@ class Test:
 if __name__ == "__main__":
     try:
 
-        mark_type = "all_youma"  # zimu_youma zimu_wuma  all_wuma  all_youma
+        mark_type = "zimu_youma"  # zimu_youma zimu_wuma  all_wuma  all_youma
 
         if mark_type == "zimu_wuma" or mark_type == "all_wuma":
             list_keyword = "/actors/uncensored"
