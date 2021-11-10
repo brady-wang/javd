@@ -100,7 +100,7 @@ class Test:
 if __name__ == "__main__":
     try:
 
-        mark_type = "zimu_youma" # zimu_youma  all_wuma  all_youma
+        mark_type = "all_wuma" # zimu_youma  all_wuma  all_youma
 
         if mark_type == "zimu_wuma" or mark_type == "all_wuma":
             list_keyword = "/makers/uncensored"
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         driver.get(list_first_url)
         login = driver.find_element_by_xpath("/html/body/div[1]/div[2]/footer/a[1]").click()
 
-        for i in range(1, 21):
+        for i in range(8, 21):
             list_url = HOST + list_keyword + "?page=" + str(i)
             test = Test(list_url, driver, "")
             test.get_list(list_url)
