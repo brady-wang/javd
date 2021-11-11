@@ -1,4 +1,5 @@
 #encoding=utf-8
+import os
 import re
 import time
 from time import sleep
@@ -23,6 +24,7 @@ options.add_argument(
 
 HOST = "https://javdb.com"
 LIST = []
+
 
 
 class Test:
@@ -101,7 +103,7 @@ class Test:
 if __name__ == "__main__":
     try:
 
-        mark_type = "all_wuma"  # zimu_youma zimu_wuma  all_wuma  all_youma
+        mark_type = "all_youma"  # zimu_youma zimu_wuma  all_wuma  all_youma
 
         if mark_type == "zimu_wuma" or mark_type == "all_wuma":
             list_keyword = "/actors/uncensored"
@@ -113,44 +115,68 @@ if __name__ == "__main__":
         driver.get(list_first_url)
         login = driver.find_element_by_xpath("/html/body/div[1]/div[2]/footer/a[1]").click()
 
-        for i in range(8, 31):
+        for i in range(1, 31):
             list_url = HOST + list_keyword + "?page=" + str(i)
             test = Test(list_url, driver, "")
             res = test.get_list(list_url)
             print(res)
             if not res:
                 break
-
         for k in LIST:
-            print(mark_type, k['href'], k['title'])
-            k['title'] = k['title'].strip()
-            if mark_type == "zimu_wuma":
-                file_name = "./actors/zimu/wuma/" + k['title'] + ".txt"
-            elif mark_type == "zimu_youma":
-                file_name = "./actors/zimu/youma/" + k['title'] + ".txt"
-            elif mark_type == "all_wuma":
-                file_name = "./actors/all/wuma/" + k['title'] + ".txt"
-            else:
-                file_name = "./actors/all/youma/" + k['title'] + ".txt"
-
-            with open(file_name, 'w+') as f:
+            with open("a.txt","a+") as f :
+                k['title'] = k['title'].strip()
+                k["title"] = k['title'].replace('/', "|")
+                k["title"] = k['title'].replace(' ', "-")
+                k["title"] = k['title'].replace('’', "")
+                f.write(k["title"]+"\n")
                 f.close()
 
-            page = 100
-            if mark_type == "zimu_wuma" or mark_type == "zimu_youma":
-                first_url = k['href'] + "?t=c"
-            else:
-                first_url = k['href'] + "?t=d"
-
-            print("crawl ", first_url)
-
-            for i in range(1, page + 1):
-                url = first_url + "&page=" + str(i)
-                print(mark_type + " crawl page " + url)
-                test = Test(url, driver, file_name, False)
-                detail_res = test.crawl_start()
-                if not detail_res:
-                    break
+        # for k in LIST:
+        #     print(mark_type, k['href'], k['title'])
+        #     k['title'] = k['title'].strip()
+        #     k["title"] = k['title'].replace('/', "|")
+        #     k["title"] = k['title'].replace(' ', "-")
+        #     k["title"] = k['title'].replace('’', "")
+        #     if mark_type == "zimu_wuma":
+        #         file_name = "./actors/zimu/wuma/" + k['title'] + ".txt"
+        #     elif mark_type == "zimu_youma":
+        #         file_name = "./actors/zimu/youma/" + k['title'] + ".txt"
+        #     elif mark_type == "all_wuma":
+        #         file_name = "./actors/all/wuma/" + k['title'] + ".txt"
+        #     else:
+        #         file_name = "./actors/all/youma/" + k['title'] + ".txt"
+        #
+        #     # 检测文件是否存在 如果存在并且大于0 跳过
+        #     exist = os.path.isfile(file_name)
+        #
+        #     flag = False
+        #     if exist:
+        #         size = os.path.getsize(file_name)
+        #         if size > 0:
+        #             print(file_name + " 已经爬取过了")
+        #         else:
+        #             flag = True
+        #     else:
+        #         with open(file_name, 'w+') as f:
+        #             f.close()
+        #         flag = True
+        #     if flag:
+        #
+        #         page = 100
+        #         if mark_type == "zimu_wuma" or mark_type == "zimu_youma":
+        #             first_url = k['href'] + "?t=c"
+        #         else:
+        #             first_url = k['href'] + "?t=d"
+        #
+        #         print("crawl ", first_url)
+        #
+        #         for i in range(1, page + 1):
+        #             url = first_url + "&page=" + str(i)
+        #             print(mark_type + " crawl page " + url)
+        #             test = Test(url, driver, file_name, False)
+        #             detail_res = test.crawl_start()
+        #             if not detail_res:
+        #                 break
         driver.quit()
 
     except Exception as e:

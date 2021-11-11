@@ -1,3 +1,4 @@
+import os
 import re
 import time
 from time import sleep
@@ -25,11 +26,11 @@ LIST = []
 
 
 class Test:
-    def __init__(self, url, driver, file_name,is_zimu=False):
+    def __init__(self, url, driver, file_name, is_zimu=False):
         self.url = url
         self.driver = driver
         self.file_name = file_name
-        self.is_zimu=is_zimu
+        self.is_zimu = is_zimu
 
     def crawl_start(self):
         content = self.get_content(self.url)
@@ -73,7 +74,7 @@ class Test:
                 item['href'] = "https://javdb.com" + href
                 driver.get(item['href'])
                 html = etree.HTML(driver.page_source)
-                if self.is_zimu == True :
+                if self.is_zimu == True:
                     details = html.xpath('//span[contains(text(),"字幕")][1]/../../a/@href')
                 else:
                     details = html.xpath('//*[@id="magnets-content"]/table/tbody/tr[1]/td[1]/a/@href')
@@ -85,10 +86,11 @@ class Test:
                     item['title'] = title
                     print(item['title'])
                     self.save_to_file(self.file_name, title, details)
-                    #time.sleep(1)
+                    # time.sleep(1)
             return True
         else:
             return False
+
     def save_to_file(self, file_name, title, content):
         with open(file_name, 'a+') as f:
             f.write(title + '\n')
@@ -100,7 +102,7 @@ class Test:
 if __name__ == "__main__":
     try:
 
-        mark_type = "all_wuma" # zimu_youma  all_wuma  all_youma
+        mark_type = "all_youma"  # zimu_youma  all_wuma  all_youma
 
         if mark_type == "zimu_wuma" or mark_type == "all_wuma":
             list_keyword = "/makers/uncensored"
@@ -112,7 +114,7 @@ if __name__ == "__main__":
         driver.get(list_first_url)
         login = driver.find_element_by_xpath("/html/body/div[1]/div[2]/footer/a[1]").click()
 
-        for i in range(8, 21):
+        for i in range(1, 31):
             list_url = HOST + list_keyword + "?page=" + str(i)
             test = Test(list_url, driver, "")
             test.get_list(list_url)
@@ -121,6 +123,9 @@ if __name__ == "__main__":
             print(mark_type, k['href'], k['title'])
 
             k['title'] = k['title'].strip()
+            k["title"] = k['title'].replace('/', "|")
+            k["title"] = k['title'].replace(' ', "-")
+            k["title"] = k['title'].replace('’', "")
             if mark_type == "zimu_wuma":
                 file_name = "./cili/zimu/wuma/" + k['title'] + ".txt"
             elif mark_type == "zimu_youma":
@@ -130,27 +135,39 @@ if __name__ == "__main__":
             else:
                 file_name = "./cili/all/youma/" + k['title'] + ".txt"
 
-            with open(file_name, 'w+') as f:
-                f.close()
+            # 检测文件是否存在 如果存在并且大于0 跳过
+            exist = os.path.isfile(file_name)
 
-            page = 50
-            if mark_type == "zimu_wuma" or mark_type == "zimu_youma":
-                first_url = k['href'] + "?f=cnsub"
+            flag = False
+            if exist:
+                size = os.path.getsize(file_name)
+                if size > 0:
+                    print(file_name + " 已经爬取过了")
+                else:
+                    flag = True
             else:
-                first_url = k['href'] + "?f=download"
+                with open(file_name, 'w+') as f:
+                    f.close()
+                flag = True
+            if flag:
+                page = 50
+                if mark_type == "zimu_wuma" or mark_type == "zimu_youma":
+                    first_url = k['href'] + "?f=cnsub"
+                else:
+                    first_url = k['href'] + "?f=download"
 
+                for i in range(1, page + 1):
+                    url = first_url + "&page=" + str(i)
+                    print(mark_type + " crawl page " + url)
+                    test = Test(url, driver, file_name, False)
 
-            for i in range(1, page + 1):
-                url = first_url + "&page=" + str(i)
-                print(mark_type + " crawl page " + url)
-                test = Test(url, driver, file_name, False)
-
-                detail_res = test.crawl_start()
-                if not detail_res:
-                    break
+                    detail_res = test.crawl_start()
+                    if not detail_res:
+                        break
         driver.quit()
 
     except Exception as e:
         print(str(e))
         print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
         print(e.__traceback__.tb_lineno)
+        driver.quit()
