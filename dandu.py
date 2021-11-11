@@ -1,6 +1,7 @@
 # encoding=utf-8
 import os
 import re
+import sys
 import time
 from time import sleep
 
@@ -103,10 +104,12 @@ class Test:
 if __name__ == "__main__":
     try:
 
+        #k = sys.argv[1]
+      
         page = 60
-        title = "潮吹"
-        key = "search?f=all&page=20&q=潮吹"
-        first_url = "https://javdb.com"+key+"&=download"
+        title = "GachiVIP"
+        key = "/series/9y7R"
+        first_url = "https://javdb.com"+key+"?f=download"
         print(first_url)
 
         driver = webdriver.Chrome(options=options)
