@@ -107,9 +107,9 @@ if __name__ == "__main__":
         #k = sys.argv[1]
       
         page = 60
-        title = "GachiVIP"
-        key = "/series/9y7R"
-        first_url = "https://javdb.com"+key+"?f=download"
+        title = "无码中文字幕"
+        key = "/tags/uncensored?c10=2&page=15"
+        first_url = "https://javdb.com"+key+"&f=download"
         print(first_url)
 
         driver = webdriver.Chrome(options=options)
