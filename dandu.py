@@ -107,8 +107,8 @@ if __name__ == "__main__":
         #k = sys.argv[1]
       
         page = 60
-        title = "中文有码2020"
-        key = "/tags?c10=2&c11=2020"
+        title = "中文有码2009"
+        key = "/tags?c10=2&c11=2009"
         first_url = "https://javdb.com"+key+"&f=download"
         print(first_url)
 
